@@ -8,33 +8,43 @@ def carga_csv(file_name):
     # suponemos que siempre trabajaremos con float
     return valores.astype(float)
 
-def axis_lim(minX, maxX, minY, maxY):
-    plt.xlabel('Población de la ciudad en 10.000s')
-    plt.ylabel('Ingresos en $10.000s')
+def axis_lim_grafica(subPlt, minX, maxX, minY, maxY):
+    subPlt.set_xlabel('Población de la ciudad en 10.000s')
+    subPlt.set_ylabel('Ingresos en $10.000s')
 
-    plt.xlim([minX - 1, maxX + 1])
-    plt.ylim([minY - 4, maxY + 0.3])
+    subPlt.set_xlim([minX - 1, maxX + 1])
+    subPlt.set_ylim([minY - 4, maxY + 0.3])
 
-def dibuja_grafica(fArray, funH, theta):
+def dibuja_grafica(subPlt, fArray, funH, theta):
     X = np.linspace(5.0, 22.5, len(fArray), endpoint=True)
-    plt.scatter(fArray[:, 0], fArray[:, 1], s=50, c='red', marker="x")
+    subPlt.scatter(fArray[:, 0], fArray[:, 1], s=50, c='red', marker="x")
 
-    axis_lim(5.0, 22.5, 0, 25)
+    axis_lim_grafica(subPlt, 5.0, 22.5, 0, 25)
 
-    plt.plot(fArray[:, 0], funH)
+    subPlt.plot(fArray[:, 0], funH)
 
     max_value = np.amax(fArray[:, 0])
     t0 = theta[0]
     t1 = theta[1]
-    plt.annotate(r'$h(x)={}+{}x$'.format(t0, t1) ,
+    subPlt.annotate(r'$h(x)={}+{}x$'.format(t0, t1) ,
         xy=(max_value, h(max_value, theta)), xycoords='data',
         xytext=(5, 26.5), fontsize=10,
         arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=-.2"))
 
-    #plt.show()
-    plt.draw()
-    plt.pause(1e-17)
+    #plt.draw()
+    #plt.pause(1e-17)
 
+def axis_lim_costes(subPlt, minX, maxX, minY, maxY):
+    subPlt.set_xlabel('Número de iteraciones')
+    subPlt.set_ylabel('Coste')
+
+    subPlt.set_xlim([minX - 50, maxX + 200])
+    subPlt.set_ylim([minY - 0.5, maxY + 0.5])
+
+def dibuja_costes(subPlt, numCasos, costeArray):
+    X = np.linspace(0, numCasos, numCasos, endpoint=True)
+    axis_lim_costes(subPlt, 0, numCasos, costeArray[len(costeArray) - 1], costeArray[0])
+    subPlt.plot(range(numCasos), costeArray)
 
 def descenso_gradiente(casos, alpha=0.01, iter=1500):
     # Inicialización de los valores de theta a 0, con cada iteración su valor irá cambiando y siempre para mejor, en el caso de que vaya a peor es que esta mal hecho
@@ -45,7 +55,7 @@ def descenso_gradiente(casos, alpha=0.01, iter=1500):
 
     m = len(casos)
 
-    plt.ion()
+    #plt.ion()
 
     for i in range(iter):
         temp0 = theta[0] - alpha * (1 / m) * np.sum(h(casos[:,0], theta) - casos[:,1], axis=0)
@@ -54,8 +64,14 @@ def descenso_gradiente(casos, alpha=0.01, iter=1500):
         theta[1] = temp1
 
         funH = h(casos[:,0], theta)
+        costeArray[i] = (1 / (2 * m)) * np.sum(np.square(h(casos[:,0], theta) - casos[:,1]), axis=0)
         plt.clf()
-        dibuja_grafica(casos, funH, theta)
+        print(costeArray[i])
+
+    fig, subPlot = plt.subplots(1, 2, figsize=(12, 5))
+
+    dibuja_grafica(subPlot[0], casos, funH, theta)
+    dibuja_costes(subPlot[1], iter, costeArray)
     plt.show()
     return theta
 
