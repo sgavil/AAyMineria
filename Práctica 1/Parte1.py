@@ -31,9 +31,6 @@ def dibuja_grafica(subPlt, fArray, funH, theta):
         xytext=(5, 26.5), fontsize=10,
         arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=-.2"))
 
-    #plt.draw()
-    #plt.pause(1e-17)
-
 def axis_lim_costes(subPlt, minX, maxX, minY, maxY):
     subPlt.set_xlabel('Número de iteraciones')
     subPlt.set_ylabel('Coste')
@@ -73,7 +70,6 @@ def descenso_gradiente(casos, alpha=0.01, iter=1500):
     dibuja_grafica(subPlot[0], casos, funH, theta)
     dibuja_costes(subPlot[1], iter, costeArray)
     plt.show()
-    return theta
 
 
 
@@ -82,12 +78,7 @@ def h(x, theta):
 
 def main(file_name):
     a = carga_csv(file_name)
-    
-    theta = descenso_gradiente(casos=a)
-
-    print("TERMINADO")
-    """funH = h(a[:, 0], theta)
-    dibuja_grafica(a, funH)"""
+    descenso_gradiente(casos=a)
 
 
 main("ex1data1.csv")
