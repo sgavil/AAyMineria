@@ -5,11 +5,13 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from pandas.io.parsers import read_csv
 
+
 def carga_csv(file_name):
     """carga el fichero csv especificado y lo devuelve en un array de numpy"""
     valores = read_csv(file_name, header=None).values
     # suponemos que siempre trabajaremos con float
     return valores.astype(float)
+
 
 def coste(X, Y, Theta):
     H = np.dot(X, Theta)
@@ -31,13 +33,23 @@ def make_data(t0_range, t1_range, X, Y):
     Coste = np.empty_like(Theta0)
     for ix, iy, in np.ndindex(Theta0.shape):
         Coste[ix, iy] = coste(X, Y, [Theta0[ix, iy], Theta1[ix, iy]])
-        
+
     return [Theta0, Theta1, Coste]
+
+
+def sumatory(m, X, Y, j, thetha):
+    sum = 0
+    for i in range(m):
+        sum = sum + (h(np.array([X[i, 0], X[i, 1], X[i, 2]]),
+                       thetha) - Y[i]) * X[i, j]
+    return sum
+
 
 def norm_matrix(X):
     fils = len(X)
     cols = len(X[0])
 
+    onesColumn = np.ones((fils, 1))
     X_norm = np.zeros((fils, cols))
 
     mu = np.zeros(cols)
@@ -50,43 +62,51 @@ def norm_matrix(X):
     for i in range(cols):
         X_norm[:, i] = (X[:, i] - mu[i]) / sigma[i]
 
+    X_norm = np.hstack((onesColumn, X_norm))
+
     return X_norm, mu, sigma
 
 
-def descenso_gradiente(X, alpha=0.01, iter=1500):
+def descenso_gradiente(X, Y, alpha=0.03, iter=1500):
     # Inicialización de los valores de theta a 0, con cada iteración su valor irá cambiando y siempre para mejor, en el caso de que vaya a peor es que esta mal hecho
-    theta = np.zeros(len(X[0]))
+    n = X.shape[1]
+    theta = np.zeros(n)
 
-    # Inizialización de un array que guarda el historial de los costes
-    costeArray = np.zeros(iter)
-
-    m = len(X)
-
+    m = X.shape[0]
+    costes = []
     for i in range(iter):
-        temp0 = theta[0] - alpha * (1 / m) * np.sum(h(X, Theta) - casos[:,1], axis=0)
-        temp1 = theta[1] - alpha * (1 / m) * np.sum((h(X[:,0], theta) - casos[:,1]) * casos[:, 0], axis=0) 
-        theta[0] = temp0
-        theta[1] = temp1
+        for j in range(n):
+            theta[j] = theta[j] - alpha * (1/m) * sumatory(m, X, Y, j, theta)
+        costes.append(coste(X, Y, theta))
+    return theta
 
-        funH = h(casos[:,0], theta)
-        costeArray[i] = (1 / (2 * m)) * np.sum(np.square(h(casos[:,0], theta) - casos[:,1]), axis=0)
-        plt.clf()
-        print(costeArray[i])
 
-    #fig, subPlot = plt.subplots(1, 2, figsize=(12, 5))
+def ecuacion_normal(X, Y):
+    a = np.linalg.inv((np.dot(X.T, X)))
+    b = np.dot(X.T, Y)
+    return np.dot(a, b)
 
-    #dibuja_grafica(subPlot[0], casos, funH, theta)
-    #dibuja_costes(subPlot[1], iter, costeArray)
-    #plt.show()
 
 def h(X, Theta):
-   return np.dot(X, Theta)
+    return np.dot(X, Theta)
 
 
 def main(file_name):
-    X = carga_csv(file_name)
+    file = carga_csv(file_name)
+    X = np.delete(file, np.shape(file)[1]-1, axis=1)
+    Y = file[:, file.shape[1]-1]
     X_norm, mu, sigma = norm_matrix(X)
-    #descenso_gradiente(casos=a)
+
+    t_grad = descenso_gradiente(X_norm, Y)
+    t_ecnormal = ecuacion_normal(X, Y)
+    print("Grad:", t_grad)
+    print("Ec.Normal:", t_ecnormal)
+
+    x1 = (1650 - mu) / sigma
+    x2 = (3 - mu) / sigma
+
+    print("Test Gradiente", np.dot(np.array([1, x1, x2]), t_grad.T))
+    print("Test Ecnormal", np.dot(np.array([1650, 3]), t_ecnormal.T))
 
 
 main("ex1data2.csv")
