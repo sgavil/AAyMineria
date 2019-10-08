@@ -67,7 +67,7 @@ def norm_matrix(X):
     return X_norm, mu, sigma
 
 
-def descenso_gradiente(X, Y, alpha=0.03, iter=1500):
+def descenso_gradiente(X, Y, alpha=0.1, iter=1500):
     # Inicialización de los valores de theta a 0, con cada iteración su valor irá cambiando y siempre para mejor, en el caso de que vaya a peor es que esta mal hecho
     n = X.shape[1]
     theta = np.zeros(n)
@@ -99,11 +99,11 @@ def main(file_name):
 
     t_grad = descenso_gradiente(X_norm, Y)
     t_ecnormal = ecuacion_normal(X, Y)
-    print("Grad:", t_grad)
-    print("Ec.Normal:", t_ecnormal)
+    print("Thetha Grad:", t_grad)
+    print("Thetha Ec.Normal:", t_ecnormal)
 
-    x1 = (1650 - mu) / sigma
-    x2 = (3 - mu) / sigma
+    x1 = (1650 - mu[0]) / sigma[0]
+    x2 = (3 - mu[1]) / sigma[1]
 
     print("Test Gradiente", np.dot(np.array([1, x1, x2]), t_grad.T))
     print("Test Ecnormal", np.dot(np.array([1650, 3]), t_ecnormal.T))
