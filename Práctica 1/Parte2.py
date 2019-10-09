@@ -77,6 +77,7 @@ def descenso_gradiente(X, Y, alpha=0.1, iter=1500):
     for i in range(iter):
         for j in range(n):
             theta[j] = theta[j] - alpha * (1/m) * sumatory(m, X, Y, j, theta)
+            #theta[j] = theta[j] - alpha * (1 / m) * np.sum((h(np.array([X[:, 0], X[:, 1], X[:, 2]]), theta) - Y) * X[:, j], axis=1)
         costes.append(coste(X, Y, theta))
     return theta
 

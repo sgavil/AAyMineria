@@ -2,11 +2,13 @@ import numpy as np
 from pandas.io.parsers import read_csv
 import matplotlib.pyplot as plt
 
+# Carga el fichero csv especificado y lo devuelve en un array de numpy
 def carga_csv(file_name):
-    """carga el fichero csv especificado y lo devuelve en un array de numpy"""
     valores = read_csv(file_name, header=None).values
     # suponemos que siempre trabajaremos con float
     return valores.astype(float)
+
+
 
 def axis_lim_grafica(subPlt, minX, maxX, minY, maxY):
     subPlt.set_xlabel('Población de la ciudad en 10.000s')
@@ -31,6 +33,8 @@ def dibuja_grafica(subPlt, fArray, funH, theta):
         xytext=(5, 26.5), fontsize=10,
         arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=-.2"))
 
+
+
 def axis_lim_costes(subPlt, minX, maxX, minY, maxY):
     subPlt.set_xlabel('Número de iteraciones')
     subPlt.set_ylabel('Coste')
@@ -44,16 +48,16 @@ def dibuja_costes(subPlt, numCasos, costeArray):
     subPlt.plot(range(numCasos), costeArray)
 
 def descenso_gradiente(casos, alpha=0.01, iter=1500):
-    # Inicialización de los valores de theta a 0, con cada iteración su valor irá cambiando y siempre para mejor, en el caso de que vaya a peor es que esta mal hecho
+    # Inicialización de los valores de theta a 0
     theta = np.zeros(2)
 
-    # Inizialización de un array que guarda el historial de los costes
+    # Inicialización de un array que guarda el historial de los costes
     costeArray = np.zeros(iter)
 
+    # m es el número de ejemplos
     m = len(casos)
 
-    #plt.ion()
-
+    # Bucle de "iter" iteraciones (por defecto son 1500) donde calculamos el valor de theta que minimice la función de coste
     for i in range(iter):
         temp0 = theta[0] - alpha * (1 / m) * np.sum(h(casos[:,0], theta) - casos[:,1], axis=0)
         temp1 = theta[1] - alpha * (1 / m) * np.sum((h(casos[:,0], theta) - casos[:,1]) * casos[:, 0], axis=0) 
@@ -65,6 +69,7 @@ def descenso_gradiente(casos, alpha=0.01, iter=1500):
         plt.clf()
         print(costeArray[i])
 
+    # Llamada a métodos para dibujar las gráficas
     fig, subPlot = plt.subplots(1, 2, figsize=(12, 5))
 
     dibuja_grafica(subPlot[0], casos, funH, theta)
