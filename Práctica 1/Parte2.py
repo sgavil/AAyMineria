@@ -37,17 +37,37 @@ def make_data(t0_range, t1_range, X, Y):
     return [Theta0, Theta1, Coste]
 
 
-def sumatory(m, X, Y, j, thetha):
+def sumatory(X, Y, j, thetha):
     sum = 0
-    for i in range(m):
+    for i in range(X.shape[0]):
         sum = sum + (h(np.array([X[i, 0], X[i, 1], X[i, 2]]),
                        thetha) - Y[i]) * X[i, j]
     return sum
 
 
+def graph_cost_alpha(X, Y):
+    alphas = np.array([0.3, 0.1, 0.03, 0.01])
+
+    plt.figure(figsize=(10, 6), dpi=80)
+    xx = np.linspace(0, 1500, 1500)
+
+    colors = ["blue", "green", "purple", "red"]
+    for i in range(len(alphas)):
+        c = (descenso_gradiente(X, Y, alpha=alphas[i]))[1]
+        plt.plot(xx, c, color=colors[i], linewidth=2.5,
+                 linestyle="-", label="Alpha: " + str(alphas[i]))
+
+    plt.legend(loc='upper right')
+
+    plt.xlabel('Number of iterations')
+    plt.ylabel(r'$J(\theta)$ ')
+
+    plt.show()
+
+
 def norm_matrix(X):
-    fils = len(X)
-    cols = len(X[0])
+    fils = X.shape[0]
+    cols = X.shape[1]
 
     onesColumn = np.ones((fils, 1))
     X_norm = np.zeros((fils, cols))
@@ -76,10 +96,9 @@ def descenso_gradiente(X, Y, alpha=0.1, iter=1500):
     costes = []
     for i in range(iter):
         for j in range(n):
-            theta[j] = theta[j] - alpha * (1/m) * sumatory(m, X, Y, j, theta)
-            #theta[j] = theta[j] - alpha * (1 / m) * np.sum((h(np.array([X[:, 0], X[:, 1], X[:, 2]]), theta) - Y) * X[:, j], axis=1)
+            theta[j] = theta[j] - alpha * (1/m) * sumatory(X, Y, j, theta)
         costes.append(coste(X, Y, theta))
-    return theta
+    return theta, costes
 
 
 def ecuacion_normal(X, Y):
@@ -98,7 +117,7 @@ def main(file_name):
     Y = file[:, file.shape[1]-1]
     X_norm, mu, sigma = norm_matrix(X)
 
-    t_grad = descenso_gradiente(X_norm, Y)
+    t_grad = descenso_gradiente(X_norm, Y)[0]
     t_ecnormal = ecuacion_normal(X, Y)
     print("Thetha Grad:", t_grad)
     print("Thetha Ec.Normal:", t_ecnormal)
@@ -108,6 +127,8 @@ def main(file_name):
 
     print("Test Gradiente", np.dot(np.array([1, x1, x2]), t_grad.T))
     print("Test Ecnormal", np.dot(np.array([1650, 3]), t_ecnormal.T))
+
+    graph_cost_alpha(X_norm, Y)
 
 
 main("ex1data2.csv")
