@@ -19,24 +19,6 @@ def coste(X, Y, Theta):
     return Aux.sum() / (2 * len(X))
 
 
-def make_data(t0_range, t1_range, X, Y):
-    """Genera las matrices X, Y, Z para generar un plot en 3D"""
-    step = 0.1
-    Theta0 = np.arange(t0_range[0], t0_range[1], step)
-    Theta1 = np.arange(t1_range[0], t1_range[1], step)
-
-    Theta0, Theta1 = np.meshgrid(Theta0, Theta1)
-    """Theta0 y Theta1 tienen las mismas dimensiones, de forma que
-    cogiendo un elemento de cada uno se generan las coordenadas x, y
-    de todos los puntos de la rejilla"""
-
-    Coste = np.empty_like(Theta0)
-    for ix, iy, in np.ndindex(Theta0.shape):
-        Coste[ix, iy] = coste(X, Y, [Theta0[ix, iy], Theta1[ix, iy]])
-
-    return [Theta0, Theta1, Coste]
-
-
 def sumatory(X, Y, j, thetha):
     sum = 0
     for i in range(X.shape[0]):
