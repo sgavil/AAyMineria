@@ -49,7 +49,6 @@ def dibuja_h(Theta, X, Y, plt):
 
 def funcion_coste(Theta, X, Y):
     m = len(X)
-    print(Theta.shape, X.shape, Y.shape)
     H = sigmoide(np.matmul(X, Theta))
     return ((-1/m) * (np.dot(np.log(sigmoide(np.dot(X, Theta))).T, Y) +
                       (np.dot(np.log(1 - sigmoide(np.dot(X, Theta))).T, 1 - Y))))
@@ -82,6 +81,17 @@ def regresion_logistica(Theta, X, Y):
     return Theta_Opt
 
 
+def ev_regresion(X, Y, Theta):
+    X_ev = sigmoide(np.dot(X, Theta))
+    X_ev = (X_ev < 0.5)
+    Y_ev = (Y == 0)
+    res = (X_ev == Y_ev)
+
+    porcentaje = ((np.sum(res)) * 100) / res.shape
+    return porcentaje
+
+
+
 def main():
     datos = carga_csv("ex2data1.csv")
     X = np.delete(datos, np.shape(datos)[1]-1, axis=1)
@@ -97,5 +107,7 @@ def main():
     Theta = regresion_logistica(Theta, X, Y)
     dibuja_h(Theta, np.delete(X, 0, axis=1), Y, plt)
 
+    correctos = ev_regresion(X, Y, Theta)
+    print("El", correctos[0], "% se clasifican correctamente.")
 
 main()
