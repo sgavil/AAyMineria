@@ -44,6 +44,7 @@ def dibuja_h(Theta, X, Y, plt):
     # quiere pintar
     plt.contour(xx1, xx2, h, [0.5], linewidths=1, colors='b')
     plt.show()
+    plt.savefig('parte1.jpg')
     plt.close()
 
 
@@ -91,7 +92,6 @@ def ev_regresion(X, Y, Theta):
     return porcentaje
 
 
-
 def main():
     datos = carga_csv("ex2data1.csv")
     X = np.delete(datos, np.shape(datos)[1]-1, axis=1)
@@ -109,5 +109,6 @@ def main():
 
     correctos = ev_regresion(X, Y, Theta)
     print("El", correctos[0], "% se clasifican correctamente.")
+
 
 main()
