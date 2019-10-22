@@ -5,10 +5,13 @@ import scipy.optimize as opt
 from sklearn.preprocessing import PolynomialFeatures
 
 # Carga el fichero csv especificado y lo devuelve en un array de numpy
+
+
 def carga_csv(file_name):
     valores = read_csv(file_name, header=None).values
     # suponemos que siempre trabajaremos con float
     return valores.astype(float)
+
 
 def dibuja_grafica(X, Y):
     admitted = np.where(Y == 1)
@@ -31,9 +34,11 @@ def dibuja_h(Theta, X, Y, plt, poly):
     x1_min, x1_max = X[:, 0].min(), X[:, 0].max()
     x2_min, x2_max = X[:, 1].min(), X[:, 1].max()
 
-    xx1, xx2 = np.meshgrid(np.linspace(x1_min, x1_max), np.linspace(x2_min, x2_max))
+    xx1, xx2 = np.meshgrid(np.linspace(x1_min, x1_max),
+                           np.linspace(x2_min, x2_max))
 
-    h = sigmoide(poly.fit_transform(np.c_[xx1.ravel(), xx2.ravel()]).dot(Theta))
+    h = sigmoide(poly.fit_transform(
+        np.c_[xx1.ravel(), xx2.ravel()]).dot(Theta))
     h = h.reshape(xx1.shape)
 
     #  el cuarto parámetro es el valor de z cuya frontera se
@@ -46,17 +51,20 @@ def dibuja_h(Theta, X, Y, plt, poly):
 def f_gradiente(Theta, X, Y, lam):
     m = len(X)
     tempTheta = np.r_[[0], Theta[1:]]
-    return (((1 / m) * np.dot(X.T, sigmoide(np.dot(X, Theta)) - Y)) 
+    return (((1 / m) * np.dot(X.T, sigmoide(np.dot(X, Theta)) - Y))
             + ((lam / m) * tempTheta))
+
 
 def f_coste(Theta, X, Y, lam):
     m = len(X)
-    return (((-1 / m) * (np.dot(np.log(sigmoide(np.dot(X, Theta))).T, Y) 
-            + np.dot(np.log(1 - sigmoide(np.dot(X, Theta))).T, (1 - Y)))) 
+    return (((-1 / m) * (np.dot(np.log(sigmoide(np.dot(X, Theta))).T, Y)
+                         + np.dot(np.log(1 - sigmoide(np.dot(X, Theta))).T, (1 - Y))))
             + ((lam / (2 * m)) * np.sum(Theta**2, initial=1)))
+
 
 def sigmoide(z):
     return 1 / (1 + np.exp(-z))
+
 
 def regresion_logistica_regularizada(X, Y, Theta, lam):
     poly = PolynomialFeatures(6)
@@ -64,13 +72,12 @@ def regresion_logistica_regularizada(X, Y, Theta, lam):
 
     grad = f_gradiente(Theta, X_poly, Y, lam)
     coste = f_coste(Theta, X_poly, Y, lam)
-    
+
     result = opt.fmin_tnc(func=f_coste, x0=Theta,
-                        fprime=f_gradiente, args=(X_poly, Y, lam))
+                          fprime=f_gradiente, args=(X_poly, Y, lam))
     Theta_Opt = result[0]
     return poly, Theta_Opt
 
-    
 
 def main():
     datos = carga_csv("ex2data2.csv")
