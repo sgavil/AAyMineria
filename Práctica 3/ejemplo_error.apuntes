@@ -1,0 +1,12 @@
+```py
+def ejemplo_error():
+    data = loadmat("ex3data1.mat")          #(5000, 1)
+    y = data["y"]                           #(5000, 400)
+    X = data["X"]
+    m = np.shape(X)[0]
+    X1s = np.hstack([np.ones([m, 1]), X])   #(5000, 401)
+    theta = np.zeros(X1s.shape(1))          #(401, )
+    H = sigmoid(np.matmul(X1s, theta))      #(5000, )
+    error = H - y                           #(5000, 5000)
+    error = H - np.ravel(y)                 #(5000)
+```
