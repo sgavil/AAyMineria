@@ -45,6 +45,7 @@ def main():
 
 
 def testClassificator(Theta, X, Y):
+    print(Theta.shape)
     aciertos = 0
     #resultadosCorrectos = np.zeros(X.shape[0])
     for m in range(X.shape[0]):  # Para cada ejemplo de entrenamiento
@@ -61,6 +62,10 @@ def testClassificator(Theta, X, Y):
         #resultadosCorrectos[m] = (index == Y[m])
 
     print("Porcentaje:", aciertos / X.shape[0])
+
+    """labels = (np.dot(X, Theta.T) >= 0.5) * 1
+    precision = np.mean(labels == Y) * 100
+    print("La precisión es del", precision)"""
 
 
 def oneVsAll(X, y, num_etiquetas, reg):
