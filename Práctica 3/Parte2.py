@@ -23,8 +23,16 @@ def backward_propagate(a1, a2, h, z2, theta2, Y, delta1, delta2):
     delta2 = delta2 + np.dot(a2.T, d3).T
 
 def testClassificator(h, Y):
-    labels = (h >= 0.5) * 1
-    precision = np.mean(labels == Y) * 100
+    aciertos = 0
+    for i in range (h.shape[0]):
+        max = np.argmax(h[i])
+
+        max += 1
+
+        if max == Y[i]:
+            aciertos += 1
+
+    precision = (aciertos / h.shape[0]) * 100
     print("La precisión es del", precision)
 
 
