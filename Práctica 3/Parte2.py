@@ -7,21 +7,6 @@ from scipy.io import loadmat
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
-# input_size es el número de columnas de X
-# hidden_size es el número de nodos en la capa del medio
-# num_labels es el tamaño de la solución
-
-def backward_propagate(a1, a2, h, z2, theta2, Y, delta1, delta2):
-    d3 = h - Y
-    a2_ = a2 * (1 - a2) # a2 (5000,26)
-                        # a2_ (5000, 26)
-
-    d2 = np.dot(d3, theta2) * a2_
-    d2 = np.delete(d2, 0, 1)
-
-    delta1 = delta1 + np.dot(a1.T, d2).T
-    delta2 = delta2 + np.dot(a2.T, d3).T
-
 def testClassificator(h, Y):
     aciertos = 0
     for i in range (h.shape[0]):
@@ -66,11 +51,5 @@ def main():
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
 
     testClassificator(h, Y)
-
-    # backward_propagate(a1, a2, h, z2, theta2, Y, delta1, delta2)
-    
-
-    #Theta1 es de dimensión 25 x 401
-    #Theta2 es de dimensión 10 x 26
 
 main()

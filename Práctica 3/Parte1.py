@@ -30,24 +30,11 @@ def f_coste(Theta, X, Y, lam):
 
 
 def sigmoide(z):
-    return 1 / (1 + np.exp(-z))  # z = theta.T * x
-
-
-def main():
-    data = loadmat("ex3data1.mat")
-
-    Y = data["y"]
-    X = data["X"]
-
-    # plt = mostrar_numeros_ejemplo(X)
-
-    oneVsAll(X, Y, 10, 0.1)
+    return 1 / (1 + np.exp(-z))
 
 
 def testClassificator(Theta, X, Y):
-    print(Theta.shape)
     aciertos = 0
-    #resultadosCorrectos = np.zeros(X.shape[0])
     for m in range(X.shape[0]):  # Para cada ejemplo de entrenamiento
         mejorClassificator = -1
         index = 0
@@ -59,13 +46,7 @@ def testClassificator(Theta, X, Y):
         if(index == Y[m]):
             aciertos += 1
 
-        #resultadosCorrectos[m] = (index == Y[m])
-
     print("Porcentaje:", aciertos / X.shape[0])
-
-    """labels = (np.dot(X, Theta.T) >= 0.5) * 1
-    precision = np.mean(labels == Y) * 100
-    print("La precisión es del", precision)"""
 
 
 def oneVsAll(X, y, num_etiquetas, reg):
@@ -76,19 +57,24 @@ def oneVsAll(X, y, num_etiquetas, reg):
     Theta = np.zeros(X.shape[1])  # (401,)
     m = X.shape[1]
 
-    for n in range(9):
+    for n in range(num_etiquetas):
         nuevaY = np.array((y == n+1)*1)
         result = opt.fmin_tnc(func=f_coste, x0=Theta,
                               fprime=f_gradiente, args=(X, nuevaY, reg))
 
         matResult[n] = result[0]  # (10,401)
 
-    nuevaY = np.array((y == 10)*1)
-    result = opt.fmin_tnc(func=f_coste, x0=Theta,
-                          fprime=f_gradiente, args=(X, nuevaY, reg))
-    matResult[9] = result[0]  # (10,401)
+    testClassificator(matResult, X, y)
 
-    resCorrectos = testClassificator(matResult, X, y)
 
+def main():
+    data = loadmat("ex3data1.mat")
+
+    Y = data["y"]
+    X = data["X"]
+
+    plt = mostrar_numeros_ejemplo(X)
+
+    oneVsAll(X, Y, 10, 0.1)
 
 main()
