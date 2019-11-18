@@ -3,24 +3,8 @@ from pandas.io.parsers import read_csv
 import matplotlib.pyplot as plt
 import scipy.optimize as opt
 from scipy.io import loadmat
-
-# Muestra un ejemplo de los de entrenamiento
-def displayData(X):
-    num_plots = int(np.size(X, 0)**.5)
-    fig, ax = plt.subplots(num_plots, num_plots, sharex=True, sharey=True)
-    plt.subplots_adjust(left=0, wspace=0, hspace=0)
-    img_num = 0
-    for i in range(num_plots):
-        for j in range(num_plots):
-            # Convert column vector into 20x20 pixel matrix
-            # transpose
-            img = X[img_num, :].reshape(20, 20).T
-            ax[i][j].imshow(img, cmap='Greys')
-            ax[i][j].set_axis_off()
-            img_num += 1
-
-    plt.show()
-    return (fig, ax)
+from checkNNGradients import checkNNGradients
+from displayData import displayData
 
 
 # Cáculo del coste no regularizado
@@ -43,7 +27,7 @@ def sigmoid(z):
 
 # Cáculo de la derivada de la función sigmoide
 def der_sigmoid(z):
-    return (sigmoid(z) * (1 - sigmoid(z)))
+    return (z * (1.0 - z))
 
 
 # Inicializa una matriz de pesos aleatorios
@@ -53,7 +37,6 @@ def pesosAleatorios(L_in, L_out):
 
     theta = np.hstack((np.ones((theta.shape[0], 1)), theta))
 
-    print(theta.shape)
     return theta
 
 
@@ -91,22 +74,26 @@ def backprop(params_rn, num_entradas, num_ocultas, num_etiquetas, X, y, reg):
         max = np.argmax(h[i])
         Y[i, max] = 1
     
-    coste = coste_no_reg(X.shape[0], num_etiquetas, h, Y)
+
     costeReg = coste_reg(X.shape[0], num_etiquetas, h, Y, reg, theta1, theta2)
 
-    d3 = h - Y # (5000, 10)
+    d3 = h - Y
 
-    sig_2 = a2 * (1 - a2) # (5000, 26)
-    d2 = np.dot(d3, theta2) * sig_2 # (5000, 26)
+    d2 = np.dot(d3, theta2) * der_sigmoid(a2)
+    d2 = np.delete(d2, 0, axis=1)
 
-    d2 = np.delete(d2, 2, axis=1) # (5000, 25)
+    delta1 = np.zeros_like(theta1)
+    delta2 = np.zeros_like(theta2)
 
-    delta1 = np.zeros(theta1.shape)
-    delta2 = np.zeros(theta2.shape)
+    delta1 = delta1 + np.dot(d2.T, a1)
+    delta2 = delta2 + np.dot(d3.T, a2)
 
-    delta1 = delta1 + np.dot(d2, a1.T) # (401, 25)
-    delta2 = delta2 + np.dot(d3, a2.T) # (26, 10)
+    grad1 = (1 / X.shape[0]) * delta1
+    grad2 = (1 / X.shape[0]) * delta2
 
+    grad = np.concatenate((np.ravel(grad1), np.ravel(grad2)))
+
+    return costeReg, grad
     
 
 
@@ -124,13 +111,21 @@ def main():
         random = np.random.randint(low=0, high=X.shape[0])
         X_show[i] = X[random]
         
-    weights = loadmat("ex4weights.mat")
-    theta1, theta2 = weights["Theta1"], weights["Theta2"]
+    #displayData(X_show)
+    #plt.show()
+
+    #weights = loadmat("ex4weights.mat")
+    #theta1, theta2 = weights["Theta1"], weights["Theta2"]
+    theta1 = pesosAleatorios(400, 25)
+    theta2 = pesosAleatorios(25, 10)
+
     # Theta1 es de dimensión 25 x 401
     # Theta2 es de dimensión 10 x 26
 
     thetaVec = np.concatenate((np.ravel(theta1), np.ravel(theta2)))
 
+
+    checkNNGradients(backprop, 0.1)
     #backprop(thetaVec, X.shape[1], num_ocultas, num_etiquetas, X, Y, 0.1)
 
 

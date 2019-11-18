@@ -24,7 +24,6 @@ def computeNumericalGradient(J, theta):
     Computes the gradient of J around theta using finite differences and
     yields a numerical estimate of the gradient.
     """
-
     numgrad = np.zeros_like(theta)
     perturb = np.zeros_like(theta)
     tol = 1e-4
@@ -84,4 +83,5 @@ def checkNNGradients(costNN, reg_param):
 
     # Check two gradients
     np.testing.assert_almost_equal(grad, numgrad)
+
     return (grad - numgrad)
