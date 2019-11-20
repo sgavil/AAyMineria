@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.optimize as opt
 from scipy.io import loadmat
 from checkNNGradients import checkNNGradients
+from displayData import displayData
 
 
 # Cáculo del coste no regularizado
@@ -100,7 +101,20 @@ def backprop(params_rn, num_entradas, num_ocultas, num_etiquetas, X, y, reg):
     grad = np.concatenate((np.ravel(delta1), np.ravel(delta2)))
 
     return costeReg, grad
-    
+
+
+# Cálculo de la precisión
+def testClassificator(h, Y):
+    aciertos = 0
+    for i in range (h.shape[0]):
+        max = np.argmax(h[i])
+
+        print(max, "---------------->", Y[i])
+        if max == Y[i]:
+            aciertos += 1
+
+    precision = (aciertos / h.shape[0]) * 100
+    print("La precisión es del", precision)
 
 
 def main():
@@ -121,6 +135,7 @@ def main():
     y_onehot = np.zeros((lenY, num_etiquetas))
     for i in range(lenY):
         y_onehot[i][y[i]] = 1
+    
 
     # Inicialización de dos matrices de pesos de manera aleatoria
     theta1 = pesosAleatorios(400, 25) # (25, 401)
@@ -129,8 +144,23 @@ def main():
     # Concatenación de las matrices de pesos en un solo vector
     thetaVec = np.concatenate((np.ravel(theta1), np.ravel(theta2)))
 
-    # Chequeo del gradiente
-    checkNNGradients(backprop, 0)
+    # Obtención de los pesos óptimos entrenando una red con los pesos aleatorios
+    optTheta = opt.minimize(fun=backprop, x0=thetaVec, 
+            args=(num_entradas, num_ocultas, num_etiquetas,
+            X, y_onehot, 1), method='Newton-CG', jac=True,
+            options={'maxiter': 70})
 
+    # Desglose de los pesos óptimos en dos matrices
+    newTheta1 = np.reshape(optTheta.x[:num_ocultas * (num_entradas + 1)],
+        (num_ocultas, (num_entradas + 1)))
+
+    newTheta2 = np.reshape(optTheta.x[num_ocultas * (num_entradas + 1): ], 
+        (num_etiquetas, (num_ocultas + 1)))
+
+    # H, resultado de la red al usar los pesos óptimos
+    a1, z2, a2, z3, h = forward_propagate(X, newTheta1, newTheta2) 
+    
+    # Cálculo de la precisión
+    testClassificator(h, y)
 
 main()
