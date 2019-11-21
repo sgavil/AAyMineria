@@ -8,14 +8,16 @@ from displayData import displayData
 
 
 # Cáculo del coste no regularizado
-def coste_no_reg(m, K, h, Y):
-    return ((1 / m) * np.sum((0 - Y * np.log(h)) - 
-    ((1 - Y) * np.log(1 - h)), initial=1))
+def coste_no_reg(m, h, y):
+    J = 0
+    for i in range(m):
+        J += np.sum(-y[i] * np.log(h[i]) - (1-y[i]) * np.log(1-h[i]))
+    return J / m
 
 
 # Cálculo del coste regularizado
-def coste_reg(m, K, h, Y, reg, theta1, theta2):
-    return (coste_no_reg(m, K, h, Y) +
+def coste_reg(m, h, Y, reg, theta1, theta2):
+    return (coste_no_reg(m, h, Y) +
             ((reg / (2 * m)) * (np.sum(theta1, initial=1) ** 2 + 
             np.sum(theta2, initial=1) ** 2)))
 
