@@ -45,7 +45,7 @@ def f_coste(Theta, X, y, reg):
 def f_gradiente(Theta, X, y, reg):
     m = len(X)
     return (1 / m) * (np.sum(np.dot((h(X, Theta[:, None]) - y).T, X), axis=0)) \
-        + (reg / m) * Theta[1:]
+        + (reg / m) * Theta
 
 
 def f_optimizacion(Theta, X, y, reg):

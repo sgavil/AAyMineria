@@ -6,9 +6,7 @@ from scipy.io import loadmat
 from sklearn.preprocessing import PolynomialFeatures
 
 ########################################################################
-############################                ############################
 ############################    DIBUJADO    ############################
-############################                ############################
 ########################################################################
 
 def dibuja_grafica_inicial(Theta, X, y):
@@ -50,35 +48,33 @@ def dibuja_polynomial_regression(Theta, X, y, mu, sigma, reg, p, axs):
     axs[0].plot(x, np.dot(X_pol, Theta))
 
 
-def dibuja_lambda_selection(lambda_vec, error, error_val):
+def dibuja_lambda_selection(lambda_vec, error_train, error_val):
     plt.figure(figsize=(8, 6))
     plt.xlabel('$\lambda$')
     plt.ylabel('Error')
     plt.title('Selecting $\lambda$ using a cross validation set')
-    plt.plot(lambda_vec, error, 'b', label='Train')
-    plt.plot(lambda_vec, error_val, 'g', label='Cross Validation')
+    plt.plot(lambda_vec, error_train, label='Train')
+    plt.plot(lambda_vec, error_val, label='Cross Validation')
     plt.legend()
 
 
 
 ########################################################################
-################                                        ################
 ################  CALCULOS DE COSTE, GRADIENTE Y THETA  ################
-################                                        ################
 ########################################################################
 
 def h(X, Theta):
     return np.dot(X, Theta)
 
-
+ 
 def f_coste(Theta, X, y, reg):
-    m = len(y)
-    return (1 / (2 * m)) * (np.sum((h(X, Theta[:, None]) - y) ** 2)) \
-        + (reg / (2 * m)) * (np.sum(Theta[1:] ** 2))
+    m = len(X)
+    return (1 / (2 * m)) * np.sum(np.square(h(X, Theta[:, None]) - y)) \
+        + (reg / (2 * m)) * np.sum(np.square(Theta[1:]))
 
 
 def f_gradiente(Theta, X, y, reg):
-    m = len(y)
+    m = len(X)
     return (1 / m) * (np.sum(np.dot((h(X, Theta[:, None]) - y).T, X), axis=0)) \
         + (reg / m) * Theta
 
@@ -99,26 +95,26 @@ def get_optimize_theta(X, y, reg):
 
 
 ########################################################################
-###############                                        #################
 ###############  NORMALIZACION DE MATRICES POLINOMICAS #################
-###############                                        #################
 ########################################################################
 
 def get_polynomial_matrix(X, Xval, Xtest, p):
     # X
     X_pol = polinomial_matrix(X, p)
     X_pol, mu, sigma = normalize_matrix(X_pol)
-    X_pol = np.hstack((np.ones((X_pol.shape[0], 1)), X_pol))
-
+    X_pol = np.insert(X_pol, 0, 1, axis=1)
+    
     # Xval
     Xval_pol = polinomial_matrix(Xval, p)
-    Xval_pol = (Xval_pol - mu) / sigma
-    Xval_pol = np.hstack((np.ones((Xval_pol.shape[0], 1)), Xval_pol))
+    Xval_pol = Xval_pol - mu 
+    Xval_pol = Xval_pol / sigma
+    Xval_pol = np.insert(Xval_pol, 0, 1, axis=1)
 
     # Xtest
     Xtest_pol = polinomial_matrix(Xtest, p)
-    Xtest_pol = (Xtest_pol - mu) / sigma
-    Xtest_pol = np.hstack((np.ones((Xtest_pol.shape[0], 1)), Xtest_pol))
+    Xtest_pol = Xtest_pol - mu 
+    Xtest_pol = Xtest_pol / sigma
+    Xtest_pol = np.insert(Xtest_pol, 0, 1, axis=1)
 
     return X_pol, Xval_pol, Xtest_pol, mu, sigma
 
@@ -127,7 +123,7 @@ def polinomial_matrix(X, p):
     X_poly = X
 
     for i in range(1, p):
-        X_poly = np.column_stack((X_poly, np.power(X, i+1)))   
+        X_poly = np.column_stack((X_poly, np.power(X, i+1))) 
     
     return X_poly
 
@@ -144,9 +140,7 @@ def normalize_matrix(X):
 
 
 ########################################################################
-######################                            ######################
 ######################  APARTADOS DE LA PRACTICA  ######################
-######################                            ######################
 ########################################################################
 
 def polynomial_regression(X, y, X_pol, mu, sigma, reg, p, axs):      
@@ -206,9 +200,7 @@ def test_error(X, y, Xtest, ytest, reg):
 
 
 ########################################################################
-################################        ################################
 ################################  MAIN  ################################
-################################        ################################
 ########################################################################
 
 def main():
@@ -230,6 +222,6 @@ def main():
     bestLambda = lambda_selection(X_pol, y, Xval_pol, yval)
     test_error(X_pol, y, Xtest_pol, ytest, bestLambda)
 
-    plt.show()
+    #plt.show()
 
 main()

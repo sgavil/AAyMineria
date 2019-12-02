@@ -6,18 +6,21 @@ from scipy.io import loadmat
 from displayData import displayData
 
 # Cáculo del coste no regularizado
+# Cáculo del coste no regularizado
 def coste_no_reg(m, h, y):
     J = 0
     for i in range(m):
-        J += np.sum(-y[i] * np.log(h[i]) - (1-y[i]) * np.log(1-h[i]))
-    return J / m
+        J += np.sum(-y[i] * np.log(h[i]) \
+             - (1 - y[i]) * np.log(1 - h[i]))
+    return (J / m)
 
 
 # Cálculo del coste regularizado
 def coste_reg(m, h, Y, reg, theta1, theta2):
-    return (coste_no_reg(m, h, Y) +
-            ((reg / (2 * m)) * (np.sum(theta1, initial=1) ** 2 + 
-            np.sum(theta2, initial=1) ** 2)))
+    return (coste_no_reg(m, h, Y) + 
+        ((reg / (2 * m)) * 
+        (np.sum(np.square(theta1[:, 1:])) + 
+        np.sum(np.square(theta2[:, 1:])))))
 
 
 # Función sigmoide
@@ -27,7 +30,7 @@ def sigmoid(z):
 
 # Cálculo de la derivada de la función sigmoide
 def der_sigmoid(z):
-    return (z * (1.0 - z))
+    return (sigmoid(z) * (1.0 - sigmoid(z)))
 
 
 # Inicializa una matriz de pesos aleatorios
@@ -68,10 +71,10 @@ def backprop(params_rn, num_entradas, num_ocultas, num_etiquetas, X, y, reg):
 
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)  
 
-    coste = coste_no_reg(m, num_etiquetas, h, y) # Coste sin regularizar
+    coste = coste_no_reg(m, h, y) # Coste sin regularizar
     print(coste)
 
-    costeReg = coste_reg(m, num_etiquetas, h, y, reg, theta1, theta2) # Coste regularizado 
+    costeReg = coste_reg(m, h, y, reg, theta1, theta2) # Coste regularizado
     print(costeReg)
 
 
@@ -113,7 +116,7 @@ def main():
     thetaVec = np.concatenate((np.ravel(theta1), np.ravel(theta2)))
 
     # Cálculo del coste
-    backprop(thetaVec, X.shape[1], num_ocultas, num_etiquetas, X, y_onehot, 0.1)
+    backprop(thetaVec, X.shape[1], num_ocultas, num_etiquetas, X, y_onehot, 1)
 
 
 main()

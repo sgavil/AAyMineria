@@ -11,15 +11,17 @@ from displayData import displayData
 def coste_no_reg(m, h, y):
     J = 0
     for i in range(m):
-        J += np.sum(-y[i] * np.log(h[i]) - (1-y[i]) * np.log(1-h[i]))
-    return J / m
+        J += np.sum(-y[i] * np.log(h[i]) \
+             - (1 - y[i]) * np.log(1 - h[i]))
+    return (J / m)
 
 
 # Cálculo del coste regularizado
 def coste_reg(m, h, Y, reg, theta1, theta2):
-    return (coste_no_reg(m, h, Y) +
-            ((reg / (2 * m)) * (np.sum(theta1, initial=1) ** 2 + 
-            np.sum(theta2, initial=1) ** 2)))
+    return (coste_no_reg(m, h, Y) + 
+        ((reg / (2 * m)) * 
+        (np.sum(np.square(theta1[:, 1:])) + 
+        np.sum(np.square(theta2[:, 1:])))))
 
 
 # Función sigmoide
@@ -29,7 +31,7 @@ def sigmoid(z):
 
 # Cálculo de la derivada de la función sigmoide
 def der_sigmoid(z):
-    return (z * (1.0 - z))
+    return (sigmoid(z) * (1.0 - sigmoid(z)))
 
 
 # Inicializa una matriz de pesos aleatorios
@@ -70,10 +72,7 @@ def backprop(params_rn, num_entradas, num_ocultas, num_etiquetas, X, y, reg):
 
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)  
 
-    coste = coste_no_reg(m, num_etiquetas, h, y) # Coste sin regularizar
-    print(coste)
-    costeReg = coste_reg(m, num_etiquetas, h, y, reg, theta1, theta2) # Coste regularizado
-    print(costeReg)
+    coste = coste_reg(m, h, y, reg, theta1, theta2) # Coste regularizado
 
     # Inicialización de dos matrices "delta" a 0 con el tamaño de los thethas respectivos
     delta1 = np.zeros_like(theta1)
@@ -102,7 +101,7 @@ def backprop(params_rn, num_entradas, num_ocultas, num_etiquetas, X, y, reg):
     # Concatenación de los gradientes
     grad = np.concatenate((np.ravel(delta1), np.ravel(delta2)))
 
-    return costeReg, grad
+    return coste, grad
 
 
 # Cálculo de la precisión
@@ -111,12 +110,11 @@ def testClassificator(h, Y):
     for i in range (h.shape[0]):
         max = np.argmax(h[i])
 
-        print(max, "---------------->", Y[i])
         if max == Y[i]:
             aciertos += 1
 
     precision = (aciertos / h.shape[0]) * 100
-    print("La precisión es del", precision)
+    print("La precisión es: {0:.2f}%".format(precision))
 
 
 def main():
@@ -140,16 +138,20 @@ def main():
     
 
     # Inicialización de dos matrices de pesos de manera aleatoria
-    theta1 = pesosAleatorios(400, 25) # (25, 401)
-    theta2 = pesosAleatorios(25, 10) # (10, 26)
+    Theta1 = pesosAleatorios(400, 25) # (25, 401)
+    Theta2 = pesosAleatorios(25, 10) # (10, 26)
+
+    # Crea una lista de Thetas
+    Thetas = [Theta1, Theta2]
 
     # Concatenación de las matrices de pesos en un solo vector
-    thetaVec = np.concatenate((np.ravel(theta1), np.ravel(theta2)))
+    unrolled_Thetas = [Thetas[i].ravel() for i,_ in enumerate(Thetas)]
+    nn_params = np.concatenate(unrolled_Thetas)
 
     # Obtención de los pesos óptimos entrenando una red con los pesos aleatorios
-    optTheta = opt.minimize(fun=backprop, x0=thetaVec, 
+    optTheta = opt.minimize(fun=backprop, x0=nn_params, 
             args=(num_entradas, num_ocultas, num_etiquetas,
-            X, y_onehot, 1), method='Newton-CG', jac=True,
+            X, y_onehot, 1), method='TNC', jac=True,
             options={'maxiter': 70})
 
     # Desglose de los pesos óptimos en dos matrices

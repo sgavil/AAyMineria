@@ -50,15 +50,16 @@ def h(X, Theta):
 
 
 def f_coste(Theta, X, y, reg):
-    m = len(y)
-    return (1 / (2 * m)) * (np.sum((h(X, Theta[:, None]) - y) ** 2)) \
-        + (reg / (2 * m)) * (np.sum(Theta ** 2))
+    m = len(X)
+    Theta = Theta[:, None]
+    return (1 / (2 * m)) * np.sum(np.square(h(X, Theta) - y)) \
+        + (reg / (2 * m)) * np.sum(np.square(Theta[1:]))
 
 
 def f_gradiente(Theta, X, y, reg):
-    m = len(y)
+    m = len(X)
     return (1 / m) * (np.sum(np.dot((h(X, Theta[:, None]) - y).T, X), axis=0)) \
-        + (reg / m) * Theta
+        + (reg / m) * Theta[1:]
 
 
 def f_optimizacion(Theta, X, y, reg):
