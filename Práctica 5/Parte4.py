@@ -223,7 +223,7 @@ def main():
     print("Best lambda value:", bestLambda)
     test_error(X_pol, y, Xtest_pol, ytest, bestLambda)
 
-    # plt.show()
+    plt.show()
 
 
 main()
