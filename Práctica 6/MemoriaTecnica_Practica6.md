@@ -35,6 +35,9 @@ Después, se han dividido esos arrays en 3 conjuntos de datos:
 
 Se han creado las correspondientes etiquetas a esos conjuntos (array 'y' de 0s o 1s si es spam o no), se ha ajustado una SVM de kernel lineal a los ejemplos de entrenamiento y se ha hecho una predicción con los conjuntos de validación y entrenamiento utilizando distintos valores de **C desde 0.0001 a 30.0**. Con estos datos se ha creado una gráfica para observar cuál es el menor error de validación ( viéndose que los mejores valores eran 0.1 y 3.0). 
 
+![alt text](best_c.png "Best C Char")
+
+
 Por último, se ha probado una SVM con un kernel lineal y ambos valores de C una predicción de los ejemplos de entrenamiento, obteniendo que el mejor valor de C es 0.1 con un porcentaje de acierto de un *98.69%* frente a un *97.38%* con C = 3.0.
 
 Concluimos la parte 2 sabiendo que para tener un sistema óptimo de clasificación de spam podemos utilizar una SVM de kernel lineal con un valor de *C=0.1*
