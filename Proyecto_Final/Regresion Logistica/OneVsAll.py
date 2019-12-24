@@ -5,6 +5,10 @@ import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
+import math
+
+
+
 
 ########################################################################
 ###############             FUNCIONES BASICAS          #################
@@ -19,18 +23,17 @@ def sigmoid(z):
 """ Calcula el coste de un determinado conjunto de ejemplos """
 def f_cost(Theta, X, Y, reg):
     m = X.shape[0]
-    # Calculo del coste sin el termino de regularizacion
-    h = sigmoid(np.dot(X, Theta))
-    term1 = np.dot(-Y.T, np.log(h))
-    term2 = np.dot((1 - Y).T, np.log(1 - h))
+    h_theta = sigmoid(np.dot(X, Theta))
 
-    # Termino de regularizacion
+    # Calculo del coste sin el termino de regularizacion
+    term1 = np.dot(-Y.T, np.log(h_theta))
+    term2 = np.dot((1 - Y).T, np.log(1 - h_theta))
+
+    # Calculo del termino de regularizacion
     reg_term = (reg / (2 * m)) * np.sum(np.square(Theta[1:]))
 
-    # Calculo del coste con termino de regularizacion
+    # Calculo del coste
     cost = (np.sum(term1 - term2) / m) + reg_term
-
-    print(term2, "---------->", cost)
 
     return cost
 
@@ -38,15 +41,15 @@ def f_cost(Theta, X, Y, reg):
 """ Calcula el gradiente de un determinado conjunto de ejemplos """
 def f_gradient(Theta, X, Y, reg):
     m = X.shape[0]
+    h_theta = sigmoid(np.dot(X, Theta))
 
     # Calculo del gradiente sin el termino de regularizacion
-    h = sigmoid(np.dot(X, Theta))
-    gradient = (1 / m) * np.dot(X.T, (h - Y))
-    
-    # Termino de regularizacion
     reg_term = (reg / m) * (Theta[1:])
 
-    # Calculo del gradiente con termino de regularizacion
+    # Calculo del termino de regularizacion
+    gradient = (1 / m) * np.dot(X.T, (h_theta - Y))
+
+    # Calculo del gradiente
     gradient[1:] = gradient[1:] + reg_term
 
     return gradient
@@ -56,23 +59,28 @@ def f_gradient(Theta, X, Y, reg):
 def f_opt(Theta, X, Y, reg):
     return f_cost(Theta, X, Y, reg), f_gradient(Theta, X, Y, reg)
 
+
+
 ########################################################################
 #############   FUNCIONES USADAS PARA EL ENTRENAMIENTO   ###############
 ########################################################################
 
 """ Calcula el Theta optimo """
-def get_optimize_theta(X, Y, reg):
+def get_optimize_theta(X, Y, reg, comp_method, use_jac):
     initial_theta = np.zeros((X.shape[1], 1))
 
-    optTheta = minimize(fun=f_opt, x0=initial_theta,
-                            args=(X, Y, reg), method='SLSQP', jac=True,
-                            options={'maxiter': 200})
+    if use_jac:
+        optTheta = minimize(fun=f_cost, x0=initial_theta,
+                            args=(X, Y, reg), method=comp_method, jac=f_gradient)
+    else:
+        optTheta = minimize(fun=f_cost, x0=initial_theta,
+                            args=(X, Y, reg), method=comp_method)
 
     return optTheta.x
 
 
 """ Selecciona el mejor termino de regularizacion de una tupla de posibles valores """
-def lambda_term_selection(X, Y, X_val, Y_val):
+def lambda_term_selection(X, Y, X_val, Y_val, comp_method, use_jac):
     lambda_vec = np.array([0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10])
 
     error_train = np.zeros((len(lambda_vec), 1))
@@ -81,30 +89,30 @@ def lambda_term_selection(X, Y, X_val, Y_val):
     for i in range(len(lambda_vec)):
         reg = lambda_vec[i]
 
-        Theta = get_optimize_theta(X, Y, reg)
+        newY = np.array((Y == i) * 1)
+        newY = newY[:None]
 
-        error_train[i] = f_opt(Theta, X, Y, 0)[0]
-        error_val[i] = f_opt(Theta, X_val, Y_val, 0)[0]
+        newY_val = np.array((Y_val == i) * 1)
+        newY_val = newY_val[:None]
 
-    print('lambda\tTrain Error\tValidation Error\n')
+        Theta = get_optimize_theta(X, newY, reg, comp_method, use_jac)
+
+        error_train[i] = f_opt(Theta, X, newY, 0)[0]
+        error_val[i] = f_opt(Theta, X_val, newY_val, 0)[0]
+
+    best_lambda = 0
+    min_error = float("inf")
+
     for i in range(len(lambda_vec)):
-        print('{}\t{}\t{}\n'.format(
-            lambda_vec[i], error_train[i], error_val[i]))
+        if not math.isnan(error_val[i]) and error_val[i] < min_error:
+            min_error = error_val[i]
+            best_lambda = lambda_vec[i]
 
-    print("Best lambda:", lambda_vec[np.argmin(error_val)])
-    return lambda_vec[np.argmin(error_val)]
-
-
-""" Calcula el error sobre el dataSet de test"""
-def test_error(X, Y, X_test, Y_test, reg):
-    Theta = get_optimize_theta(X, Y, reg)
-    error_test = f_opt(Theta, X_test, Y_test, 0)[0]
-
-    print("Test error for the best lambda: {0:.4f}".format(error_test))
+    return best_lambda
 
 
 """ Entrena los clasificadores de cada clase """
-def oneVsAll(X, Y, num_of_price_range, reg):
+def oneVsAll(X, Y, num_of_price_range, reg, comp_method, use_jac):
     # Numero de propiedades de los ejemplos
     n = X.shape[1]
 
@@ -116,7 +124,7 @@ def oneVsAll(X, Y, num_of_price_range, reg):
         newY = np.array((Y == i) * 1)
         newY = newY[:None]
 
-        matResult[i] = get_optimize_theta(X, newY, reg)
+        matResult[i] = get_optimize_theta(X, newY, reg, comp_method, use_jac).ravel()
 
     return matResult
 
@@ -137,10 +145,13 @@ def testClassificator(Theta, X, Y):
             aciertos += 1
         
     precission = round((aciertos / X.shape[0]) * 100, 1)
-    print(colored('Precision: {}%'.format(precission), 'green'))
 
     return precission
 
+def logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, method, jac):
+    best_lambda = lambda_term_selection(X, Y, X_val, Y_val, method, jac)
+    optTheta = oneVsAll(X, Y, 4, best_lambda, method, jac)
+    return testClassificator(optTheta, X_test, Y_test)
 
 init()
 warnings.filterwarnings("ignore")

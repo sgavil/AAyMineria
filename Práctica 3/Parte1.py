@@ -18,15 +18,25 @@ def mostrar_numeros_ejemplo(X):
 def f_gradiente(Theta, X, Y, lam):
     m = len(X)
     tempTheta = np.r_[[0], Theta[1:]]
-    return (((1 / m) * np.dot(X.T, sigmoide(np.dot(X, Theta)) - np.ravel(Y)))
+    grad = (((1 / m) * np.dot(X.T, sigmoide(np.dot(X, Theta)) - np.ravel(Y)))
             + ((lam / m) * tempTheta))
+
+    print("GRADIENTE")
+    print(grad)
+    return grad
 
 
 def f_coste(Theta, X, Y, lam):
     m = len(X)
-    return (((-1 / m) * (np.dot(np.log(sigmoide(np.dot(X, Theta))).T, Y)
+    coste = (((-1 / m) * (np.dot(np.log(sigmoide(np.dot(X, Theta))).T, Y)
                          + np.dot(np.log(1 - sigmoide(np.dot(X, Theta))).T, (1 - Y))))
             + ((lam / (2 * m)) * np.sum(Theta**2, initial=1)))
+
+    print("THETA")
+    print(Theta)
+    print("COSTE")
+    print(coste)
+    return coste
 
 
 def sigmoide(z):
