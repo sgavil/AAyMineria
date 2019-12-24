@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import warnings
 import numpy as np
 from pandas.io.parsers import read_csv
-import OneVsAll
+import reg_logistica
 
 '''
     Theta: (n + 1, 1)
@@ -68,15 +68,15 @@ def main():
     X_test, Y_test = get_data_matrix(test_data)
 
 
-    nelder_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Nelder-Mead', False)
-    powell_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Powell', False)
-    cg_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'CG', True)
-    bfgs_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'BFGS', True)
-    newton_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Newton-CG', True)
-    l_bfgs_b_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'L-BFGS-B', True)
-    tnc_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'TNC', True)
-    cobyla_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'COBYLA', False)
-    slsqp_precission = OneVsAll.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'SLSQP', True)
+    nelder_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Nelder-Mead', False)
+    powell_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Powell', False)
+    cg_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'CG', True)
+    bfgs_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'BFGS', True)
+    newton_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'Newton-CG', True)
+    l_bfgs_b_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'L-BFGS-B', True)
+    tnc_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'TNC', True)
+    cobyla_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'COBYLA', False)
+    slsqp_precission = reg_logistica.logistic_regression(X, Y, X_val, Y_val, X_test, Y_test, 'SLSQP', True)
 
     precission = [nelder_precission, powell_precission, cg_precission, bfgs_precission, newton_precission, \
         l_bfgs_b_precission, tnc_precission, cobyla_precission, slsqp_precission]
