@@ -36,7 +36,27 @@ def main():
     X_val, Y_val = get_data_matrix(validation_data)
     X_test, Y_test = get_data_matrix(test_data)
 
-    ourSVM.trainSVMForLinear(X, Y, X_test, Y_test, Y_val, X_val)
+    '''Training Support Vector Machines '''
+    #ourSVM.trainSVMForLinear(X, Y, X_test, Y_test, Y_val, X_val)
+    #ourSVM.trainPolynomialSVM(X, Y, X_val, Y_val, X_test, Y_test)
+    #ourSVM.trainGaussianSVM(X, Y, X_val, Y_val, X_test, Y_test)
+    #ourSVM.trainSigmoidSVM(X, Y, X_val, Y_val, X_test, Y_test)
+
+    '''Testing SVM'''
+    sigmoidClassifier = ourSVM.testSigmoidSVM(X, Y, X_test, Y_test)[1]
+    gaussianClassifier = ourSVM.testGaussianSVM(X, Y, X_test, Y_test)[1]
+    polynomialClassifier = ourSVM.testPolynomialSVM(X, Y, X_test, Y_test)[1]
+    linearClassifier = ourSVM.testLinearSVM(X, Y, X_test, Y_test)[1]
+
+    classifiers = [sigmoidClassifier, gaussianClassifier,
+                   polynomialClassifier, linearClassifier]
+
+    names = ["Sigmoid", "Gaussian", "Polynomial", "Linear"]
+    # Draw global accuracy plot
+    #ourSVM.show_global_accuracy(X, Y, X_test, Y_test)
+
+    for i in range(len(classifiers)):
+        ourSVM.draw_sets(X_test, Y_test, classifiers[i], names[i])
 
 
 main()
