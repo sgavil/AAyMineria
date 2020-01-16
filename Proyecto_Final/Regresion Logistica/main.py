@@ -1,6 +1,3 @@
-from colorama import init
-from termcolor import colored
-
 from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 
@@ -18,23 +15,23 @@ import reg_logistica
 
 def draw_precission(precission):
     plt.figure(figsize=(14, 6))
-    plt.title('Regularized Logistic Regression with best $\lambda$ for each method')
+    plt.title('Regularized Logistic Regression with $\lambda$ = 1')
     plt.xlabel('Algorithm method')
     plt.ylabel('Precission')
 
     plt.ylim(0, 100)
 
     x = np.arange(len(precission))
-    rects = plt.bar(x, precission, color='blue')
-    plt.xticks(x, ('Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                   'Newton-CG', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP'))
+    rects = plt.bar(x, precission, color='red')
+    plt.xticks(x, ('CG', 'BFGS', 'L-BFGS-B', 'TNC', 'SLSQP'))
     for rect in rects:
         height = rect.get_height()
         plt.annotate('{}%'.format(height),
-                     xy=(rect.get_x() + rect.get_width() / 2, height),
+                     xy=(rect.get_x() + rect.get_width() / 2, height / 2),
                      xytext=(0, 3),  # 3 points vertical offset
                      textcoords="offset points",
-                     ha='center', va='bottom')
+                     ha='center', va='bottom', color=(1.0, 1.0, 1.0, 1.0),
+                    fontsize=20, weight='bold')
     plt.show()
 
 # Carga un fichero ".csv" y devuelve los datos
@@ -73,31 +70,20 @@ def main():
     X_val, Y_val = get_data_matrix(validation_data)
     X_test, Y_test = get_data_matrix(test_data)
 
-    nelder_precission = reg_logistica.logistic_regression(
-        X, Y, X_val, Y_val, X_test, Y_test, 'Nelder-Mead', False)
-    powell_precission = reg_logistica.logistic_regression(
-        X, Y, X_val, Y_val, X_test, Y_test, 'Powell', False)
     cg_precission = reg_logistica.logistic_regression(
         X, Y, X_val, Y_val, X_test, Y_test, 'CG', True)
     bfgs_precission = reg_logistica.logistic_regression(
         X, Y, X_val, Y_val, X_test, Y_test, 'BFGS', True)
-    newton_precission = reg_logistica.logistic_regression(
-        X, Y, X_val, Y_val, X_test, Y_test, 'Newton-CG', True)
     l_bfgs_b_precission = reg_logistica.logistic_regression(
         X, Y, X_val, Y_val, X_test, Y_test, 'L-BFGS-B', True)
     tnc_precission = reg_logistica.logistic_regression(
         X, Y, X_val, Y_val, X_test, Y_test, 'TNC', True)
-    cobyla_precission = reg_logistica.logistic_regression(
-        X, Y, X_val, Y_val, X_test, Y_test, 'COBYLA', False)
     slsqp_precission = reg_logistica.logistic_regression(
         X, Y, X_val, Y_val, X_test, Y_test, 'SLSQP', True)
 
-    precission = [nelder_precission, powell_precission, cg_precission, bfgs_precission, newton_precission,
-                  l_bfgs_b_precission, tnc_precission, cobyla_precission, slsqp_precission]
+    precission = [cg_precission, bfgs_precission, l_bfgs_b_precission, tnc_precission, slsqp_precission]
 
     draw_precission(precission)
 
-
-init()
 warnings.filterwarnings("ignore")
 main()

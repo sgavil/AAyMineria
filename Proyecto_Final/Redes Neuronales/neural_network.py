@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.optimize as opt
+import matplotlib.pyplot as plt
+import math
 
 # Función sigmoide
 def sigmoid(z):
@@ -37,11 +39,73 @@ def random_weight(L_in, L_out):
 
 def num_to_vector(n, output_layer):
     lenN = len(n)
+    n = n.ravel()
     n_onehot = np.zeros((lenN, output_layer))
     for i in range(lenN):
         n_onehot[i][int(n[i])] = 1
 
-    return n, n_onehot
+    return n_onehot
+
+
+""" Selecciona el mejor termino de regularizacion de una tupla de posibles valores """
+def lambda_term_selection(nn_params, input_layer, hidden_layer , output_layer, X, Y_onehot, \
+    X_val, Y_val_onehot, comp_method, use_jac):
+    lambda_vec = np.array([0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10])
+
+    error_train = np.zeros((len(lambda_vec), 1))
+    error_val = np.zeros((len(lambda_vec), 1))
+
+    for i in range(len(lambda_vec)):
+        reg = lambda_vec[i]
+
+        Theta = get_optimize_theta(nn_params, input_layer, hidden_layer, \
+        output_layer, X, Y_onehot, reg, comp_method, use_jac)
+
+        # Despliegue de params_rn para sacar las Thetas
+        theta1 = np.reshape(Theta.x[:hidden_layer * (input_layer + 1)],
+                (hidden_layer, (input_layer + 1)))
+
+        theta2 = np.reshape(Theta.x[hidden_layer * (input_layer + 1): ], 
+            (output_layer, (hidden_layer + 1)))
+
+        a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
+        error_train[i] = f_cost(X.shape[0], h, Y_onehot, reg, theta1, theta2)
+
+        a1, z2, a2, z3, h_val = forward_propagate(X_val, theta1, theta2) 
+        error_val[i] = f_cost(X_val.shape[0], h_val, Y_val_onehot, reg, theta1, theta2)
+
+    best_lambda = 0
+    min_error = float("inf")
+
+    for i in range(len(lambda_vec)):
+        if not math.isnan(error_val[i]) and error_val[i] < min_error:
+            min_error = error_val[i]
+            best_lambda = lambda_vec[i]
+
+    return best_lambda
+
+
+def get_optimize_theta(nn_params, input_layer, hidden_layer , output_layer, X, Y_onehot, reg, comp_method, use_jac):
+    initial_theta = np.zeros((X.shape[1], 1))
+
+    # Obtención de los pesos óptimos entrenando una red con los pesos aleatorios
+    if use_jac:
+        optTheta = opt.minimize(
+            fun=backprop,
+            x0=nn_params, 
+            args=(input_layer, hidden_layer, output_layer, X, Y_onehot, reg), 
+            method=comp_method, 
+            jac=True,
+            options={'maxiter': 70})
+    else:
+        optTheta = opt.minimize(
+            fun=backprop, 
+            x0=nn_params, 
+            args=(input_layer, hidden_layer, output_layer, X, Y_onehot, reg), 
+            method=comp_method,
+            options={'maxiter': 70})
+
+    return optTheta
 
 # Devuelve "Y" a partir de una X y no unos pesos determinados
 def forward_propagate(X, theta1, theta2):
@@ -116,7 +180,8 @@ def testClassificator(h, Y):
 def training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, hidden_layer, output_layer, \
     comp_method, use_jac):
     # Transforma Y en un vector
-    Y, Y_onehot = num_to_vector(Y.ravel(), output_layer)
+    Y_onehot = num_to_vector(Y, output_layer)
+    Y_val_onehot = num_to_vector(Y_val, output_layer)
 
     # Inicialización de dos matrices de pesos de manera aleatoria
     Theta1 = random_weight(input_layer, hidden_layer)
@@ -129,22 +194,11 @@ def training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, hid
     unrolled_Thetas = [Thetas[i].ravel() for i,_ in enumerate(Thetas)]
     nn_params = np.concatenate(unrolled_Thetas)
 
-    # Obtención de los pesos óptimos entrenando una red con los pesos aleatorios
-    if use_jac:
-        optTheta = opt.minimize(
-            fun=backprop,
-            x0=nn_params, 
-            args=(input_layer, hidden_layer, output_layer, X, Y_onehot, 1), 
-            method=comp_method, 
-            jac=True,
-            options={'maxiter': 70})
-    else:
-        optTheta = opt.minimize(
-            fun=backprop, 
-            x0=nn_params, 
-            args=(input_layer, hidden_layer, output_layer, X, Y_onehot, 1), 
-            method=comp_method,
-            options={'maxiter': 70})
+    reg = lambda_term_selection(nn_params, input_layer, hidden_layer, output_layer, \
+        X, Y_onehot, X_val, Y_val_onehot, comp_method, use_jac)
+
+    optTheta = get_optimize_theta(nn_params, input_layer, hidden_layer, \
+        output_layer, X, Y_onehot, reg, comp_method, use_jac)
 
     # Desglose de los pesos óptimos en dos matrices
     newTheta1 = np.reshape(optTheta.x[:hidden_layer * (input_layer + 1)],
@@ -154,7 +208,18 @@ def training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, hid
         (output_layer, (hidden_layer + 1)))
 
     # H, resultado de la red al usar los pesos óptimos
-    a1, z2, a2, z3, h = forward_propagate(X, newTheta1, newTheta2) 
+    a1, z2, a2, z3, h = forward_propagate(X_test, newTheta1, newTheta2) 
     
     # Cálculo de la precisión
-    return testClassificator(h, Y)
+    return testClassificator(h, Y_test)
+
+def draw_lambda_values(lambda_values, error_train, error_val, method):
+    plt.figure(figsize=(8, 5))
+    plt.plot(lambda_values, error_val, 'or--', label='Validation Set Error')
+    plt.plot(lambda_values, error_train, 'bo--', label='Training Set Error')
+    plt.xlabel('$\lambda$ value', fontsize=16)
+    plt.ylabel('Classification Error [%]', fontsize=14)
+    plt.title(f'Finding Best $\lambda$ value for method {method}', fontsize=18)
+    plt.xscale('log')
+    plt.legend()
+    plt.show()

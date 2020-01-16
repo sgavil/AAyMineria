@@ -18,7 +18,7 @@ Theta2 de dimension (4 x 9)
 
 def draw_precission(precission):
     plt.figure(figsize=(14, 6))
-    plt.title('Neural Network Precission')
+    plt.title('Neural Network Precission with best $\lambda$ for each method')
     plt.xlabel('Algorithm method')
     plt.ylabel('Precission')
 
@@ -26,14 +26,16 @@ def draw_precission(precission):
 
     x = np.arange(len(precission))
     rects = plt.bar(x, precission)
-    plt.xticks(x, ('Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP'))
+    plt.xticks(x, ('CG', 'BFGS', 'L-BFGS-B', 'TNC', 'SLSQP'))
     for rect in rects:
         height = rect.get_height()
         plt.annotate('{}%'.format(height),
-                    xy=(rect.get_x() + rect.get_width() / 2, height),
-                    xytext=(0, 3),  # 3 points vertical offset
+                    xy=(rect.get_x() + rect.get_width() / 2, 
+                    height / 2),
+                    xytext=(0, 0),  # 3 points vertical offset
                     textcoords="offset points",
-                    ha='center', va='bottom')
+                    ha='center', va='bottom', color=(0.0, 0.0, 0.0, 1.0),
+                    fontsize=20, weight='bold')
     plt.show()
 
 # Carga un fichero ".csv" y devuelve los datos
@@ -69,32 +71,21 @@ def main():
     X_test, Y_test = get_data_matrix(test_data)
 
     input_layer = X.shape[1]
-    hidden_layer = 8
+    hidden_layer = 32
     output_layer = 4
 
-    '''nelder_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
-        hidden_layer, output_layer, 'Nelder-Mead', False)
-    powell_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
-        hidden_layer, output_layer, 'Powell', False)
     cg_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
         hidden_layer, output_layer, 'CG', True)
     bfgs_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
         hidden_layer, output_layer, 'BFGS', True)
-    newton_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
-        hidden_layer, output_layer, 'Newton-CG', True)
     l_bfgs_b_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
-        hidden_layer, output_layer, 'L-BFGS-B', True)'''
+        hidden_layer, output_layer, 'L-BFGS-B', True)
     tnc_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
         hidden_layer, output_layer, 'TNC', True)
-    '''cobyla_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
-        hidden_layer, output_layer, 'COBYLA', False)
     slsqp_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \
         hidden_layer, output_layer, 'SLSQP', True)
 
-    precission = [nelder_precission, powell_precission, cg_precission, bfgs_precission, newton_precission, \
-        l_bfgs_b_precission, tnc_precission, cobyla_precission, slsqp_precission]
-
-    draw_precission(precission)'''
-    print(tnc_precission)
+    precission = [cg_precission, bfgs_precission, l_bfgs_b_precission, tnc_precission, slsqp_precission]
+    draw_precission(precission)
 
 main()
