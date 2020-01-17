@@ -15,7 +15,7 @@ import reg_logistica
 
 def draw_precission(precission):
     plt.figure(figsize=(14, 6))
-    plt.title('Regularized Logistic Regression with $\lambda$ = 1')
+    plt.title('Regularized Logistic Regression with $\lambda$ = 0.1')
     plt.xlabel('Algorithm method')
     plt.ylabel('Precission')
 
@@ -30,7 +30,7 @@ def draw_precission(precission):
                      xy=(rect.get_x() + rect.get_width() / 2, height / 2),
                      xytext=(0, 3),  # 3 points vertical offset
                      textcoords="offset points",
-                     ha='center', va='bottom', color=(1.0, 1.0, 1.0, 1.0),
+                     ha='center', va='bottom', color=(0.0, 0.0, 0.0, 1.0),
                     fontsize=20, weight='bold')
     plt.show()
 
