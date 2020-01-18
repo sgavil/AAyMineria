@@ -22,7 +22,7 @@ def draw_precission(precission):
     plt.ylim(0, 100)
 
     x = np.arange(len(precission))
-    rects = plt.bar(x, precission, color='red')
+    rects = plt.bar(x, precission)
     plt.xticks(x, ('CG', 'BFGS', 'L-BFGS-B', 'TNC', 'SLSQP'))
     for rect in rects:
         height = rect.get_height()
