@@ -1,0 +1,138 @@
+body{
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: rgb(44, 44, 44);
+    font-family: sans-serif;
+}
+
+.title{
+    position: relative;
+    margin: 0;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgb(33, 137, 255), rgb(33, 137, 255));
+    color: rgb(44, 44, 44);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.filter{
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 30px;
+    border-bottom: solid 1px;
+    border-image-source: 
+        linear-gradient(
+            45deg,
+            rgb(148, 148, 148),
+            rgba(0, 0, 0, 0),
+            rgba(0, 0, 0, 0)
+        );
+    border-image-slice: 1;
+}
+
+.filter:nth-child(20){
+    border: none;
+}
+
+.filter a{
+    font-size: 22px;
+    font-weight: bold;
+    color: #eee;
+}
+
+.filter select{
+    width: 250px;
+    height: 50px;
+    font-size: 20px;
+    margin-left: 20px;
+    background: #0563af;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    outline: none;
+    border-radius: 5px;
+}
+
+.submit_button{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin: 50px;
+    cursor: pointer;
+    width: 300px;
+    height: 80px;
+    font-size: 36px;
+    color: #0563af;
+    font-weight: bold;
+    border: 3px #0563af solid;
+    background: #fff;
+
+    border-radius: 20px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+}
+
+.submit_button:hover{
+    color: rgb(44, 44, 44);
+    border: 3px rgb(44, 44, 44) solid;
+    background: #fff;
+}
+
+.range_box{
+    position: relative;
+    display: flex;
+    font-size: 20px;
+}
+
+.range{
+    position: relative;
+    width: 300px;
+    height: 2px;
+    margin-top: 13px;
+    margin-left: 30px;
+    outline: none;
+}
+
+.range::-webkit-slider-runnable-track{
+    background: #111;
+    height: 2px;
+}
+
+.range::-webkit-slider-thumb{
+    cursor: pointer;
+    -webkit-appearance: none;
+	box-sizing: content-box;
+    transform: translateY(-10px);
+    background: #0563af;
+}
+
+span{
+    position: relative;
+    top: 0px;
+    left: 0;
+    margin-left: 10px;
+    padding: 2px;
+    width: 50px;
+    box-sizing: border-box;
+    background: #fff;
+    text-align: center;
+    border-radius: 2px;
+}
+
+span:before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+}
+

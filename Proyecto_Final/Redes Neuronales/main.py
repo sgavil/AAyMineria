@@ -18,7 +18,7 @@ Theta2 de dimension (4 x 9)
 
 def draw_precission(precission):
     plt.figure(figsize=(14, 6))
-    plt.title('Neural Network Precission with best $\lambda$ for each method')
+    plt.title('Neural Network Precission with the best $\lambda$ for each method')
     plt.xlabel('Algorithm method')
     plt.ylabel('Precission')
 
@@ -56,7 +56,6 @@ def normalize_matrix(X):
 def get_data_matrix(data):
     X = np.delete(data, data.shape[1] - 1, axis=1) # (1200, 20)
     X = normalize_matrix(X)
-    X = np.insert(X, 0, 1, axis=1) # (1200, 21)
     Y = data[:, data.shape[1] - 1] # (1200,)
 
     return X, Y
@@ -71,7 +70,9 @@ def main():
     X_test, Y_test = get_data_matrix(test_data)
 
     input_layer = X.shape[1]
-    hidden_layer = 32
+
+    print(X.shape[1])
+    hidden_layer = 8
     output_layer = 4
 
     cg_precission = neural_network.training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, \

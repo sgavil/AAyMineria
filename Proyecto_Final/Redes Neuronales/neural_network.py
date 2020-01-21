@@ -2,6 +2,7 @@ import numpy as np
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 import math
+from scipy.io import savemat
 
 # Función sigmoide
 def sigmoid(z):
@@ -74,6 +75,7 @@ def lambda_term_selection(nn_params, input_layer, hidden_layer , output_layer, X
         a1, z2, a2, z3, h_val = forward_propagate(X_val, theta1, theta2) 
         error_val[i] = f_cost(X_val.shape[0], h_val, Y_val_onehot, reg, theta1, theta2)
 
+    #draw_lambda_values(lambda_vec, error_train, error_val, method=comp_method)
     best_lambda = 0
     min_error = float("inf")
 
@@ -206,6 +208,8 @@ def training_neural_network(X, Y, X_val, Y_val, X_test, Y_test, input_layer, hid
 
     newTheta2 = np.reshape(optTheta.x[hidden_layer * (input_layer + 1): ], 
         (output_layer, (hidden_layer + 1)))
+
+    #savemat("weights.mat", {'Theta1': newTheta1, 'Theta2': newTheta2})
 
     # H, resultado de la red al usar los pesos óptimos
     a1, z2, a2, z3, h = forward_propagate(X_test, newTheta1, newTheta2) 

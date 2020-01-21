@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phone CompluHouse</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        function rangeSlider(value, name){
+            document.getElementsByName(name)[0].innerHTML = value;
+        }
+    </script>
+    <script>
+        function initStorage(){
+            if (typeof(Storage) !== "undefined") {
+                if(typeof(localStorage.getItem("file_num")) == undefined){
+                    localStorage.setItem("file_num", "0");
+                }
+            }
+        }
+
+        function goPython(){
+            ajax1();
+            ajax2();
+
+        }
+
+        function ajax1(){
+            var frm = $("#id_form");
+            var datos = frm.serialize();
+
+            if (typeof(Storage) !== "undefined") {
+                localStorage.setItem("file_num", Number(localStorage.getItem("file_num")) + 1);
+                console.log(localStorage.getItem("file_num"));
+            }
+            else{
+                console.log("Po no existe");
+            }
+            $.ajax({
+                url: '/main',
+                method: frm.prop('method'),
+                timeout: 5000,
+                async: false,
+                data:{
+                    'bateria_val': $("#bateria_val").val(),
+                    'blue_val': $("#blue_val").val(),
+                    'procesador_val': $("#procesador_val").val(),
+                    'sim_val': $("#sim_val").val(),
+                    'cam_fron_val': $("#cam_fron_val").val(),
+                    'cuatrog_val': $("#cuatrog_val").val(),
+                    'memoria_val': $("#memoria_val").val(),
+                    'profundidad_val': $("#profundidad_val").val(),
+                    'peso_val': $("#peso_val").val(),
+                    'nucleos_val': $("#nucleos_val").val(),
+                    'cam_prin_val': $("#cam_prin_val").val(),
+                    'res_alto_val': $("#res_alto_val").val(),
+                    'res_ancho_val': $("#res_ancho_val").val(),
+                    'ram_val': $("#ram_val").val(),
+                    'altura_val': $("#altura_val").val(),
+                    'anchura_val': $("#anchura_val").val(),
+                    'autonomia_val': $("#autonomia_val").val(),
+                    'tresg_val': $("#tresg_val").val(),
+                    'tactil_val': $("#tactil_val").val(),
+                    'wifi_val': $("#wifi_val").val(),
+                    'file_num': localStorage.getItem("file_num")
+                },
+                dataType: 'JSON',
+                success : function(e) {
+                    console.log("Success");
+                },
+                error : function(e) {
+                    console.info("Error");
+                },
+                done : function(e) {
+                    console.info("DONE");
+                }
+            });
+        }
+
+        function ajax2(){
+            $.ajax({
+                url: "result" + localStorage.getItem("file_num") + ".txt",
+                dataType: "text",
+                success: function(result, response){
+                    alert("El teléfono móvil que has elegido es de " + result); 
+                },
+                error: function(e){
+                    $.ajax(this);
+                }
+            });
+        }
+
+    </script>
+</head>
+<body onload="initStorage()">
+    <div class="content">
+        <div class="title">
+            <h1 id="div1">PHONE COMPLUHOUSE</h1>
+        </div>
+        <div class="filter_user">
+            <form id="id_form" method="get">
+                <div class="filter">
+                    <div class=range_box>
+                        <a>BATERÍA</a>
+                        <input id="bateria_val" type="range" class="range" name="" 
+                        value="0" min="0" max="2000" 
+                        onmousemove="rangeSlider(this.value, 'bateria_range')"
+                        onChange="rangeSlider(this.value, 'bateria_range')">
+                        <span id="rangeValue" name="bateria_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <a>BLUETOOTH</a>
+                    <select id="blue_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>VELOCIDAD DEL PROCESADOR</a>
+                        <input id="procesador_val" type="range" class="range" name="" 
+                        value="0" min="0" max="3" step="0.1" 
+                        onmousemove="rangeSlider(this.value, 'procesador_range')"
+                        onChange="rangeSlider(this.value, 'procesador_range')">
+                        <span id="rangeValue" name="procesador_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <a>DUAL SIM</a>
+                    <select id="sim_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>CÁMARA FRONTAL, MP</a>
+                        <input id="cam_fron_val" type="range" class="range" name="" 
+                        value="0" min="0" max="20" 
+                        onmousemove="rangeSlider(this.value, 'cam_frontal_range')"
+                        onChange="rangeSlider(this.value, 'cam_frontal_range')">
+                        <span id="rangeValue" name="cam_frontal_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <a>4G</a>
+                    <select id="cuatrog_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>MEMORIA INTERNA</a>
+                        <input id="memoria_val" type="range" class="range" name="" 
+                        value="0" min="0" max="64" 
+                        onmousemove="rangeSlider(this.value, 'memoria_range')"
+                        onChange="rangeSlider(this.value, 'memoria_range')">
+                        <span id="rangeValue" name="memoria_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>PROFUNDIDAD DEL TELÉFONO, CM</a>
+                        <input id="profundidad_val" type="range" class="range" name="" 
+                        value="0" min="0" max="1" step="0.1" 
+                        onmousemove="rangeSlider(this.value, 'profundidad_range')"
+                        onChange="rangeSlider(this.value, 'profundidad_range')">
+                        <span id="rangeValue" name="profundidad_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>PESO</a>
+                        <input id="peso_val" type="range" class="range" name="" 
+                        value="0" min="80" max="200" 
+                        onmousemove="rangeSlider(this.value, 'peso_range')"
+                        onChange="rangeSlider(this.value, 'peso_range')">
+                        <span id="rangeValue" name="peso_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>NÚMERO DE NÚCLEOS DEL PROCESADOR</a>
+                        <input id="nucleos_val" type="range" class="range" name="" 
+                        value="0" min="1" max="8" 
+                        onmousemove="rangeSlider(this.value, 'nucleos_range')"
+                        onChange="rangeSlider(this.value, 'nucleos_range')">
+                        <span id="rangeValue" name="nucleos_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>CÁMARA PRINCIPAL, MP</a>
+                        <input id="cam_prin_val" type="range" class="range" name="" 
+                        value="0" min="0" max="20" 
+                        onmousemove="rangeSlider(this.value, 'cam_prin_range')"
+                        onChange="rangeSlider(this.value, 'cam_prin_range')">
+                        <span id="rangeValue" name="cam_prin_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>RESOLUCIÓN DEL ALTO DE LA PANTALLA</a>
+                        <input id="res_alto_val" type="range" class="range" name="" 
+                        value="0" min="1" max="1980" 
+                        onmousemove="rangeSlider(this.value, 'res_alto_range')"
+                        onChange="rangeSlider(this.value, 'res_alto_range')">
+                        <span id="rangeValue" name="res_alto_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>RESOLUCIÓN DEL ANCHO DE LA PANTALLA</a>
+                        <input id="res_ancho_val" type="range" class="range" name="" 
+                        value="0" min="1" max="1980" 
+                        onmousemove="rangeSlider(this.value, 'res_ancho_range')"
+                        onChange="rangeSlider(this.value, 'res_ancho_range')">
+                        <span id="rangeValue" name="res_ancho_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>RAM</a>
+                        <input id="ram_val" type="range" class="range" name="" 
+                        value="0" min="0" max="4000" 
+                        onmousemove="rangeSlider(this.value, 'ram_range')"
+                        onChange="rangeSlider(this.value, 'ram_range')">
+                        <span id="rangeValue" name="ram_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>ALTURA, CM</a>
+                        <input id="altura_val" type="range" class="range" name="" 
+                        value="0" min="0" max="20" 
+                        onmousemove="rangeSlider(this.value, 'altura_range')"
+                        onChange="rangeSlider(this.value, 'altura_range')">
+                        <span id="rangeValue" name="altura_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>ANCHURA, CM</a>
+                        <input id="anchura_val" type="range" class="range" name="" 
+                        value="0" min="0" max="20" 
+                        onmousemove="rangeSlider(this.value, 'anchura_range')"
+                        onChange="rangeSlider(this.value, 'anchura_range')">
+                        <span id="rangeValue" name="anchura_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class=range_box>
+                        <a>AUTONOMÍA</a>
+                        <input id="autonomia_val" type="range" class="range" name="" 
+                        value="0" min="0" max="20" 
+                        onmousemove="rangeSlider(this.value, 'autonomia_range')"
+                        onChange="rangeSlider(this.value, 'autonomia_range')">
+                        <span id="rangeValue" name="autonomia_range">0</span>
+                    </div>
+                </div>
+                <div class="filter">
+                    <a>3G</a>
+                    <select id="tresg_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <a>PANTALLA TÁCTIL</a>
+                    <select id="tactil_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <div class="filter">
+                    <a>WIFI</a>
+                    <select id="wifi_val" required>
+                        <option value="">Seleccionar ...</option>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                </div>
+                <input class="submit_button" type="button" onclick="goPython()" value="Aplicar flitros">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
