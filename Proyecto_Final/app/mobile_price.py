@@ -27,18 +27,6 @@ def get_data_matrix(data, X_toAdd):
 
     return X
 
-# Cálculo de la precisión
-def testClassificator(h, Y):
-    aciertos = 0
-    for i in range (h.shape[0]):
-        max = np.argmax(h[i])
-
-        if max == Y[i]:
-            aciertos += 1
-
-    precision = round((aciertos / h.shape[0]) * 100, 1)
-    return precision
-
 # Devuelve "Y" a partir de una X y no unos pesos determinados
 def forward_propagate(X, theta1, theta2):
     m = X.shape[0] 
