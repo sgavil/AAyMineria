@@ -141,7 +141,8 @@ def findBetterCForLinear(Xtrain, ytrain, Xval, yval):
         error_train.append(train_error)
         error_val.append(val_error)
 
-    #draw_findingBestValue(C_test_values, error_train,error_val, 'Finding Best C Value', 'C')
+    draw_findingBestValue(C_test_values, error_train,
+                          error_val, 'Finding Best C Value for Linear', 'C')
     # De la grafica podemos observar que los mejores valores se encuentrar alrededor de utilizar una C con un
     # valor de  37.0
 
